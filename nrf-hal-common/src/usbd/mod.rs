@@ -250,7 +250,7 @@ impl UsbBus for Usbd<'_> {
     #[inline]
     fn enable(&mut self) {
         interrupt::free(|cs| {
-            let regs = self.periph.borrow(cs);
+            let regs: &USBD = self.periph.borrow(cs);
 
             errata::pre_enable();
 
@@ -259,6 +259,13 @@ impl UsbBus for Usbd<'_> {
             // Wait until the peripheral is ready.
             while !regs.eventcause.read().ready().is_ready() {}
             regs.eventcause.write(|w| w.ready().set_bit()); // Write 1 to clear.
+
+            // Enable interrupts
+            regs.intenset.write(|w| {
+                w.ep0datadone().set_bit();
+                w.ep0setup().set_bit();
+                w.usbreset().set_bit()
+            });
 
             errata::post_enable();
 

@@ -583,21 +583,21 @@ impl UsbBus for Usbd<'_> {
 
     #[inline]
     fn suspend(&self) {
-        interrupt::free(|cs| {
+        /*interrupt::free(|cs| {
             let regs = self.periph.borrow(cs);
             regs.lowpower.write(|w| w.lowpower().low_power());
-        });
+        });*/
     }
 
     #[inline]
     fn resume(&self) {
-        interrupt::free(|cs| {
+        /*interrupt::free(|cs| {
             let regs = self.periph.borrow(cs);
 
             errata::pre_wakeup();
 
             regs.lowpower.write(|w| w.lowpower().force_normal());
-        });
+        });*/
     }
 
     fn poll(&self) -> PollResult {
